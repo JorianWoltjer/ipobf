@@ -6,7 +6,9 @@ use std::{
 
 use clap::Parser;
 use dns_lookup::lookup_host;
-use ipobf::{cli::Cli, gen_permutations_v4, gen_permutations_v6};
+use ipobf::{
+    cli::Cli, dns_public, dns_rbndr, dns_redirect, gen_permutations_v4, gen_permutations_v6,
+};
 
 fn parse_host_to_ip(host: &str) -> Result<Ipv4Addr, String> {
     // Try to parse as a raw IP address
@@ -62,7 +64,15 @@ fn main() {
     permutations.extend_from_slice(&gen_permutations_v6(&ip.to_ipv6_compatible()));
     permutations.extend_from_slice(&gen_permutations_v6(&ip.to_ipv6_mapped()));
 
-    for permutation in permutations {
+    permutations.push(dns_public(&ip));
+    permutations.push(dns_rbndr(&ip, &"1.1.1.1".parse().unwrap()));
+    permutations.push(dns_rbndr(&"1.1.1.1".parse().unwrap(), &ip));
+    permutations.push(dns_redirect(&ip));
+
+    for mut permutation in permutations {
+        if args.brackets && permutation.contains(":") {
+            permutation = format!("[{permutation}]");
+        }
         if let Some(ref mut file) = file {
             writeln!(file, "{permutation}").unwrap();
         } else {
@@ -86,7 +96,8 @@ mod tests {
         ] {
             assert_eq!(parse_host_to_ip(host).unwrap(), ip);
         }
-        assert!(parse_host_to_ip("invalid").is_err());
+        assert!(parse_host_to_ip("invalid.tld").is_err());
+        assert!(parse_host_to_ip("ipv6.google.com").is_err());
         assert!([Ipv4Addr::new(1, 1, 1, 1), Ipv4Addr::new(1, 0, 0, 1)]
             .contains(&parse_host_to_ip("one.one.one.one").unwrap()));
     }

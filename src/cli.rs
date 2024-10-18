@@ -13,7 +13,7 @@ pub struct Cli {
     pub padding: usize,
 
     /// Disable adding few extra aliases for localhost (eg. 0.0.0.0, 127.1.2.3) and cloud (eg. [fd00:ec2::254])
-    #[clap(short = 'l', long, default_value = "false")]
+    #[clap(short, long)]
     pub no_aliases: bool,
 
     /// Output file
@@ -21,7 +21,10 @@ pub struct Cli {
     pub output: Option<PathBuf>,
 
     /// Append to the output file
-    #[clap(short = 'a', long)]
+    #[clap(short = 'a', long, requires("output"))]
     pub output_append: bool,
-    // TODO: bracket option for IPv6
+
+    /// Add brackets to IPv6 addresses
+    #[clap(short, long)]
+    pub brackets: bool,
 }
