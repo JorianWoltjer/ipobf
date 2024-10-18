@@ -2,8 +2,16 @@
 name = "ipobf"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jorian Woltjer (J0R1AN)"]
+license = "MIT OR Apache-2.0"
+description = "Obfuscate an IP address for SSRF filter bypasses"
+readme = "README.md"
+homepage = "https://github.com/JorianWoltjer/ipobf"
+repository = "https://github.com/JorianWoltjer/ipobf"
+keywords = ["ip-address", "filter", "security", "cli", "obfuscation"]
+categories = ["command-line-utilities"]
 
 [dependencies]
-clap = { version = "4.5.20", features = ["derive"] }
-dns-lookup = "2.0.4"
+clap = { version = "4.5", features = ["derive"] }
+dns-lookup = "2.0"
 libc = "0.2"
